@@ -129,4 +129,42 @@ class OrderController extends BaseController
         $order->delete();
         return $this->sendResponse([], 'Order deleted successfully.');
     }
+
+    /**
+     * Generate sales reports.
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function salesReport(Request $request)
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        // Validate the date range if provided
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        // Total sales for the given time period or all time if no dates provided
+        $totalSales = Order::with('items.product')->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+            return $query->whereBetween('order_date', [$startDate, $endDate]);
+        })->sum('total_amount');
+
+        // Top-selling products
+        $topSellingProducts = OrderItem::with('product')->select('product_id', DB::raw('SUM(qty) as total_qty'))
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                return $query->whereBetween('orders.order_date', [$startDate, $endDate]);
+            })
+            ->groupBy('product_id')
+            ->orderBy('total_qty', 'desc')
+            ->with('product')
+            ->get();
+
+        return $this->sendResponse([
+            'total_sales' => $totalSales,
+            'top_selling_products' => $topSellingProducts,
+        ], 'Sales report generated successfully.');
+    }
 }

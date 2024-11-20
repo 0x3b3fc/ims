@@ -61,10 +61,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{order}', 'destroy')->middleware('permission:orders-delete')->name('api.orders.destroy');
     });
 
+    Route::get('/sales-orders', [OrderController::class,'salesReport'])->middleware('permission:orders-list')->name('api.orders.sales');
+
     // Stock histories routes with permissions
     Route::controller(ProductStockHistoryController::class)->prefix('stock-history')->group(function () {
-        Route::get('/', 'index')->middleware('permission:stock-history-list')->name('api.stock-history.index');
-        Route::get('/{stockHistory}', 'show')->middleware('permission:stock-history-read')->name('api.stock-history.show');
+        Route::get('/', 'index')->middleware('permission:stock_history-list')->name('api.stock-history.index');
+        Route::get('/{stockHistory}', 'show')->middleware('permission:stock_history-read')->name('api.stock-history.show');
     });
 
     Route::post('logout', [UsersController::class, 'logout'])->name('api.logout');
