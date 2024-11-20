@@ -60,9 +60,17 @@ class UsersController extends BaseController
      */
     public function update(Request $request, User $user)
     {
-        $input = $request->all();
-        $user->update($input);
-        return $this->sendResponse($user->toArray(), 'User updated successfully.');
+        $data = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'role' => 'required',
+            'password' => 'required',
+        ]);
+        $data['email_verified_at'] = now();
+        $data['password'] = bcrypt($data['password']);
+        $user->update($data);
+        $user->syncRoles([$data['role']]);
+        return $this->sendResponse($user->load('roles.permissions')->toArray(), 'User updated successfully.');
     }
 
     /**
@@ -72,6 +80,7 @@ class UsersController extends BaseController
      */
     public function destroy(User $user)
     {
+        $user->removeRoles($user->roles);
         $user->delete();
         return $this->sendResponse($user->toArray(), 'User deleted successfully.');
     }
@@ -83,7 +92,11 @@ class UsersController extends BaseController
      */
     public function login(Request $request)
     {
-        $input = $request->all();
+        $input = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
         if (!auth()->attempt($input)) {
             return $this->sendError('Unauthorized.', ['error' => 'Unauthorized']);
         }
@@ -105,11 +118,10 @@ class UsersController extends BaseController
 
     /**
      * User profile API
-     * @param Request $request
      * @return JsonResponse
      */
-    public function profile(Request $request)
+    public function profile()
     {
-        return $this->sendResponse($request->user()->toArray(), 'User profile retrieved successfully.');
+        return $this->sendResponse(auth()->user()->load('roles.permissions')->toArray(), 'User profile retrieved successfully.');
     }
 }

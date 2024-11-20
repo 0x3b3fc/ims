@@ -13,17 +13,18 @@ return [
 
     'roles_structure' => [
         'admin' => [
-            'users' => 'c,r,u,d',
+            'users' => 'l,c,r,u,d',
         ],
         'manager' => [
-            'users' => 'c,r,u',
+            'users' => 'l,c,r,u',
         ],
         'viewer' => [
-            'users' => 'r',
+            'users' => 'l,r',
         ],
     ],
 
     'permissions_map' => [
+        'l' => 'list',
         'c' => 'create',
         'r' => 'read',
         'u' => 'update',
