@@ -14,12 +14,24 @@ return [
     'roles_structure' => [
         'admin' => [
             'users' => 'l,c,r,u,d',
+            'categories' => 'l,c,r,u,d',
+            'products' => 'l,c,r,u,d',
+            'orders' => 'l,c,r,u,d',
+            'stock_history' => 'l,c,r,u,d',
         ],
         'manager' => [
             'users' => 'l,c,r,u',
+            'categories' => 'l,c,r,u',
+            'products' => 'l,c,r,u',
+            'orders' => 'l,r',
+            'stock_history' => 'l,r',
         ],
         'viewer' => [
             'users' => 'l,r',
+            'categories' => 'l,r',
+            'products' => 'l,r',
+            'orders' => 'l,r',
+            'stock_history' => 'l,r',
         ],
     ],
 

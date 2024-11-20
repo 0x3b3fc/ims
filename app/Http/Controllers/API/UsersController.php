@@ -45,7 +45,7 @@ class UsersController extends BaseController
      */
     public function show($id)
     {
-        $user = User::find($id);
+        $user = User::find($id)->load('roles.permissions');
         if (is_null($user)) {
             return $this->sendError('User not found.');
         }
@@ -80,9 +80,9 @@ class UsersController extends BaseController
      */
     public function destroy(User $user)
     {
-        $user->removeRoles($user->roles);
+        $user->roles()->detach();
         $user->delete();
-        return $this->sendResponse($user->toArray(), 'User deleted successfully.');
+        return $this->sendResponse([], 'User deleted successfully.');
     }
 
     /**
