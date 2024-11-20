@@ -28,6 +28,8 @@ This is a simple inventory management system that allows users to add, update, d
 
 ## Usage
 1. Visit `http://localhost:8000` in your browser
+2. the docs in `http://localhost:8000/docs/api` in your browser
+3. you can download the docs in `http://localhost:8000/docs/api` to use in postman or you can use it from the ui
 2. Login with the default credentials:
    - Admin:
      - Email: `admin@test.com`
